@@ -2,23 +2,18 @@ import mongoose from 'mongoose'
 import livereload from 'livereload'
 import connectLivereload from 'connect-livereload'
 
-import express from 'express'
-const app = express()
-
 import path from 'path'
 const __dirname = path.resolve()
 
 import dotenv from 'dotenv'
 dotenv.config()
 
+import express from 'express'
+const app = express()
+
 import searchRouter from './src/routes/search.js'
 import songsRouter from './src/routes/songs.js'
 import spotifyRouter from './src/routes/spotify.js'
-import mirinaeRouter from './src/routes/mirinae.js'
-
-app.use(express.static(__dirname))
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
 
 // https://stackoverflow.com/a/40026625/16237146
 app.use(function (req, res, next) {
@@ -30,6 +25,10 @@ app.use(function (req, res, next) {
   next()
 })
 
+app.use(express.static(__dirname))
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+
 // send the user to index html page in spite of the url
 app.get('/', (req, res) => {
   res.sendFile(path.resolve(__dirname, './public/index.html'))
@@ -37,7 +36,6 @@ app.get('/', (req, res) => {
 app.use('/search/', searchRouter)
 app.use('/songs/', songsRouter)
 app.use('/spotify/', spotifyRouter)
-app.use('/mirinae/', mirinaeRouter)
 
 mongoose.set('strictQuery', true)
 mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true })
@@ -57,7 +55,6 @@ db.once('open', () => {
       liveReloadServer.refresh('/')
     }, 100)
   })
-
   app.use(connectLivereload())
 
   const port = process.env.PORT || 8080
