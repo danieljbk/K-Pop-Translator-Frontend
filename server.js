@@ -1,5 +1,4 @@
 import mongoose from 'mongoose'
-import cors from 'cors'
 import livereload from 'livereload'
 import connectLivereload from 'connect-livereload'
 
@@ -29,7 +28,17 @@ liveReloadServer.server.once('connection', () => {
 app.use(express.static(__dirname))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
-app.use(cors({ origin: '*' }))
+
+// https://stackoverflow.com/a/40026625/16237146
+app.use(function (req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*')
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept'
+  )
+  next()
+})
+
 app.use(connectLivereload())
 
 // send the user to index html page in spite of the url
@@ -49,7 +58,9 @@ app.use('/spotify/', spotifyRouter)
 import mirinaeRouter from './src/routes/mirinae.js'
 app.use('/mirinae/', mirinaeRouter)
 
+mongoose.set('strictQuery', true)
 mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true })
+
 const db = mongoose.connection
 db.on('error', (error) => console.log(error))
 db.once('open', () => {
