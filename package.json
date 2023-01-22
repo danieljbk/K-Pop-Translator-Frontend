@@ -1,5 +1,5 @@
 {
-  "name": "K-Pop Translator",
+  "name": "kpoptranslator",
   "version": "1.0.0",
   "type": "module",
   "main": "public/app.js",
